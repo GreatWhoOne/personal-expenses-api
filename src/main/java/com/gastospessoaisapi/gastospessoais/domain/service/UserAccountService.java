@@ -8,11 +8,14 @@ import com.gastospessoaisapi.gastospessoais.domain.model.UserAccount;
 import com.gastospessoaisapi.gastospessoais.domain.repository.UserAccountRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class UserAccountService implements ICRUDService<UserAccountRequestDto, UserAccountResponseDto> {
 
     private UserAccountRepository userAccountRepository;
@@ -47,27 +50,48 @@ public class UserAccountService implements ICRUDService<UserAccountRequestDto, U
 
     @Override
     public UserAccountResponseDto register(UserAccountRequestDto dto) {
+
         validateUser(dto);
+        Optional<UserAccount> optionalUserAccount = userAccountRepository.findByEmail(dto.getEmail());
+
+        if(optionalUserAccount.isPresent()) {
+            throw new ResourceBadRequestException("Já existe um usuário cadastrado com o e-mail: "+dto.getEmail());
+        }
+
        UserAccount userAccount = mapper.map(dto, UserAccount.class);
        userAccount.setId(null);
+       userAccount.setRegistrationDate(new Date());
        userAccountRepository.save(userAccount);
        return mapper.map(userAccount, UserAccountResponseDto.class);
     }
 
     @Override
     public UserAccountResponseDto update(Long id, UserAccountRequestDto dto) {
-        getById(id);
+        UserAccountResponseDto userDb = getById(id);
         validateUser(dto);
+
         UserAccount userAccount = mapper.map(dto, UserAccount.class);
+
         userAccount.setId(id);
+        userAccount.setInactivationDate(userDb.getInactivationDate());
+        userAccount.setRegistrationDate(userDb.getRegistrationDate());
+
         userAccountRepository.save(userAccount);
         return mapper.map(userAccount, UserAccountResponseDto.class);
     }
 
     @Override
     public void delete(Long id) {
-        getById(id);
-        userAccountRepository.deleteById(id);
+        Optional<UserAccount> optionalUserAccount = userAccountRepository.findById(id);
+
+        if(optionalUserAccount.isEmpty()) {
+            throw new ResourceNotFoundException("Não foi possível encontrar o usuário com o id: " + id);
+        }
+        UserAccount userAccount = optionalUserAccount.get();
+
+        userAccount.setInactivationDate(new Date());
+
+        userAccountRepository.save(userAccount);
     }
 
     private void validateUser(UserAccountRequestDto dto) {

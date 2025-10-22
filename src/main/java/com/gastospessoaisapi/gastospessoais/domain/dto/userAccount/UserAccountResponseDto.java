@@ -8,6 +8,7 @@ public class UserAccountResponseDto {
     private String email;
     private String photo;
     private Date inactivationDate;
+    private Date registrationDate;
 
     public Long getId() {
         return id;
@@ -47,5 +48,13 @@ public class UserAccountResponseDto {
 
     public void setInactivationDate(Date inactivationDate) {
         this.inactivationDate = inactivationDate;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
     }
 }

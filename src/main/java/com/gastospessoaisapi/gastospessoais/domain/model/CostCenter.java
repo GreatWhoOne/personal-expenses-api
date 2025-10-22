@@ -23,9 +23,9 @@ public class CostCenter {
     @JoinColumn(name = "idUserAccount", nullable = false)
     private UserAccount userAccount;
 
-    @ManyToMany(mappedBy = "costcenter")
-    @JsonBackReference
-    private List<FinancialTitle> titles;
+//    @ManyToMany(mappedBy = "costcenter")
+//    @JsonBackReference
+//    private List<FinancialTitle> titles;
 
     public Long getId() {
         return id;
@@ -59,11 +59,11 @@ public class CostCenter {
         this.userAccount = userAccount;
     }
 
-    public List<FinancialTitle> getTitles() {
-        return titles;
-    }
+//    public List<FinancialTitle> getTitles() {
+//        return titles;
+//    }
 
-    public void setTitles(List<FinancialTitle> titles) {
-        this.titles = titles;
-    }
+//    public void setTitles(List<FinancialTitle> titles) {
+//        this.titles = titles;
+//    }
 }
